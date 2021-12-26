@@ -56,9 +56,10 @@ def photo(update: Update, context: CallbackContext) -> None:
     """Echo the user message."""
     doc = update.message.document
     f = doc.get_file(20)
-    f.download("output.png")
+    img = f.download_as_bytearray()
+
     decoder = Decoder()
-    response = decoder.decode("output.png")
+    response = decoder.decode(img)
     update.message.reply_text(response)
 
 
@@ -73,7 +74,6 @@ def main() -> None:
     # on different commands - answer in Telegram
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-
 
     # on non command i.e message - image the message on Telegram
     dispatcher.add_handler(MessageHandler(Filters.forwarded, photo))

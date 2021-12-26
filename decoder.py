@@ -1,6 +1,7 @@
 import cv2
-from maps import maps, sym_levels
 import cv2 as cv
+from maps import maps, sym_levels
+import numpy as np
 
 
 class Decoder:
@@ -25,8 +26,9 @@ class Decoder:
                         squares.append(cnt)
         return squares
 
-    def _predict(self, filename):
-        img = cv2.imread(filename)
+    def _predict(self, img_buf):
+        img_str = np.frombuffer(img_buf, dtype=np.uint8)
+        img = cv2.imdecode(img_str, cv2.IMREAD_COLOR)
         canvas = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         squares = self._find_squares(img)
@@ -168,8 +170,8 @@ class Decoder:
         phrase += ' '
         return phrase
 
-    def decode(self, filename):
-        phrases, legend_storage = self._predict(filename)
+    def decode(self, img_buf):
+        phrases, legend_storage = self._predict(img_buf)
         text = ''
         for n, phrase in enumerate(phrases):
             text += self.translate(phrase, legend_storage)
